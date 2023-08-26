@@ -5,13 +5,13 @@
 >>Projeto desenvolvido no curso da Geek University - Udemy [Programação Web com Python e Django Framework: Essencial](https://www.udemy.com/course/programacao-web-com-django-framework-do-basico-ao-avancado/)
 
 ## Ambiente de Desenvolvimento
-Linux, MySQL
+Linux, Docker e MySQL
 
 ## Documentação
 - [DJango](https://www.djangoproject.com/)
 ## Desenvolvimento:
 1. <span style="color:383E42"><b>Preparando ambiente</b></span>
-    <!-- <details><summary><span style="color:Chocolate">Detalhes</span></summary> -->
+    <details><summary><span style="color:Chocolate">Detalhes</span></summary>
     <p>
 
     - Criar repositório no github
@@ -125,14 +125,19 @@ Linux, MySQL
         USE_TZ = True
 
         ```
-    
+
+    - Configuração para arquivos státicos e `settings.py`
+        ```python
+        STATIC_URL = 'static/'
+        STATIC_ROOT = os.path.join(STATIC_URL, 'staticfiles')
+        ```
     </p>
 
     </details> 
 
     ---
 
-3. <span style="color:383E42"><b>Criar container com imagem mysql</b></span>
+3. <span style="color:383E42"><b>Criar container com imagem MySQL</b></span>
     <details><summary><span style="color:Chocolate">Detalhes</span></summary>
     <p>
 
@@ -180,6 +185,81 @@ Linux, MySQL
 
     ---
 
+4. <span style="color:383E42"><b>Criação das views e templates com htm básico</b></span>
+    <details><summary><span style="color:Chocolate">Detalhes</span></summary>
+    <p>
+
+    - Criação das views `index, contato, produto`
+        ```python
+        from django.shortcuts import render
+
+        def index(request):
+            return render(request, 'index.html')
+
+        def contato(request):
+            return render(request, 'contato.html')
+
+        def produto(request):
+            return render(request, 'produto.html')
+        ```
+
+    - Criação diretórios:
+        `core/templates`
+        `core/static`
+        `core/static/css`
+        `core/static/css/js`
+        `core/static/css/js/images`
+
+    - Criação templates
+        >index.html
+        ```html
+        <!DOCTYPE html>
+        <html lang="pt-br">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Index</title>
+        </head>
+        <body>
+            <h1>Index</h1>
+        </body>
+        </html>
+        ```
+        
+        >contado.html
+        ```html
+        <!DOCTYPE html>
+        <html lang="pt-br">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Cotato</title>
+        </head>
+        <body>
+            <h1>Contato</h1>
+        </body>
+        </html>
+        ```
+
+        >produto.html
+        ```html
+        <!DOCTYPE html>
+        <html lang="pt-br">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Produto</title>
+        </head>
+        <body>
+            <h1>Produto</h1>    
+        </body>
+        </html>
+        ```
+    </p>
+
+    </details> 
+
+    ---
 
 ## Deploy no Google App Engine:
 1. <span style="color:383E42"><b>Instalar a CLI gcloud [Link](https://cloud.google.com/sdk/docs/install?hl=pt-br)</b></span>
