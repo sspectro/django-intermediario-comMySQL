@@ -27,7 +27,7 @@ Linux, Docker e MySQL
         sudo apt install python3-pip
         pip3 --version
         ```
-    - Instalar o `django`, `whitenoise`(para os arquivos staticos), `gunicorn`( servidor para python), `bootstrap5` (integrado com django), `PyMySQL`(driver de conexão com o banco mysql) e `django-std-image`(para trabalhar com imagens)
+    - Instalar o `django`, `whitenoise`(para os arquivos staticos), `gunicorn`( servidor para python), `django-bootstrap-v5` (integrado com django), `PyMySQL`(driver de conexão com o banco mysql) e `django-std-image`(para trabalhar com imagens)
         ```sh
         sudo apt update
         pip3 install django
@@ -66,7 +66,7 @@ Linux, Docker e MySQL
 
         'core',
         'bootstrap5',
-        'std-image',
+        'stdimage',
         ]
         ```
     - Adicionando MIDDLEWARE `whitenoise`, porém deixar comentado para uso posterior
@@ -102,10 +102,10 @@ Linux, Docker e MySQL
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.mysql',
-                'NAME': MYSQLDATABASENAME,
-                'USER': USUARIO_MYSQL,
-                'PASSWORD': SENHA_MYSQL,
-                'HOST': HOST,
+                'NAME': MeusDados['MYSQLDATABASENAME'],
+                'USER': MeusDados['USUARIO_MYSQL'],
+                'PASSWORD': MeusDados['SENHA_MYSQL'],
+                'HOST': MeusDados['HOST'],
                 'PORT':'3306',
                 
             }
@@ -142,7 +142,11 @@ Linux, Docker e MySQL
     <p>
 
     - [Documentação dockerhub](https://hub.docker.com/_/mysql/tags)
-        Adiciono informação da porta `3306:3306`
+        Baixa imagem `pull mysql`
+        Cria container 
+        Nomeando `--name django2` 
+        Adiciono informação da porta `-p 3306:3306`
+        Informo a senha `MYSQL_ROOT_PASSWORD=suasenha`
         ```bash
         docker pull mysql
         sudo docker run -p 3306:3306 --name django2 -e MYSQL_ROOT_PASSWORD=suasenha -d mysql
@@ -179,13 +183,22 @@ Linux, Docker e MySQL
         show databases
         ```
 
+    - Testar acesso com `Workbench`
+        Instale o Workench pela loja de aplicativos linux
+        Se algum erro ao configurar, como:
+        `....Workbench incompatible/nonstandard server....`
+
+        Após abrir o `Workbench` pressione `ctrl + r` ou clic em `Database` e selecione Reverse Engineer
+        Informe `ip, user e password` do container em execução
+    
+
     </p>
 
     </details> 
 
     ---
 
-4. <span style="color:383E42"><b>Criação das views e templates com htm básico</b></span>
+4. <span style="color:383E42"><b>Criação das views, rotas, templates e instalação MySQL</b></span>
     <details><summary><span style="color:Chocolate">Detalhes</span></summary>
     <p>
 
@@ -255,11 +268,50 @@ Linux, Docker e MySQL
         </body>
         </html>
         ```
+
+    - Criar arquivo de rotas app core `core/urls.py`
+        ```python
+        urlpatterns = [
+        path('', index, name='index'),
+        path('contato/', contato, name='contato'),
+        path('produto/', produto, name='produto'),
+        ]
+        ```
+
+    - Incluir `rota` no arquivo de rotas do projeto que direciona para arquivo de rotas do app core - `django2/urls.py`
+        ```python
+        path('', include('core.urls')),
+        ```
+
+    - Instale o `libmysqlclient-dev` se necessário
+        **Obs.:** no terminal principal/local não no projeto
+        ```bash
+        sudo apt-get install libmysqlclient-dev python3-dev
+        ```
+
+    - Instalar `MysSQL` no projeto
+        ```bash
+        pip install MySQL
+        ```
+
+    - Atualizar o `requirements.txt`
+        ```bash
+        pip freeze > requirements.txt
+        ```
+
+    - Executar o `migrate` para criação das tabelas django no `database`
+        Não esquecer de dar os privilégios necessários ao usuário do banco de dados
+        ```bash
+        python manage.py migrate
+        ```
+
+
     </p>
 
     </details> 
 
     ---
+
 
 ## Deploy no Google App Engine:
 1. <span style="color:383E42"><b>Instalar a CLI gcloud [Link](https://cloud.google.com/sdk/docs/install?hl=pt-br)</b></span>
