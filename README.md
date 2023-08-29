@@ -325,7 +325,7 @@ Linux, Docker e MySQL
     <details><summary><span style="color:Chocolate">Detalhes</span></summary>
     <p>
 
-    - Verificar os atributos de um form django
+    - Verificar os atributos de um form django com `python shell`
         >Observe que o sinal `>>>` é mostrado ao executar o primeiro comando, significa que está no python shell, não é parte do comando
         ```bash
         python manage.py shell
@@ -384,6 +384,45 @@ Linux, Docker e MySQL
 
         def produto(request):
             return render(request, 'produto.html')
+        ```
+
+    - Incluir `ContatoForm` ao template `contato.html`
+        >Incluir bootstrap5 no template `{% load bootstrap5 %}`
+        `autocomplete`como `off` é para desativar opção autocomplete do formulário, evitando exibir dados informados anteriormente pelos usuários.
+        `{% csrf_token %}` - Segurança - É criado um token a cada solicitação que usado para validar o formulário. É possível verificar esse token ao inspecionar página no navegador.
+        `{% bootstrap_form form %}` - Indica ao bootstrap para aplicar css no `form` que recebeu como parâmetro da view `contato`
+        
+        ```html
+        {% load bootstrap5 %}
+
+        <!DOCTYPE html>
+        <html lang="pt-br">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Cotato</title>
+
+                {# Load CSS and JavaScript #}
+                {% bootstrap_css %}
+                {% bootstrap_javascript %}
+        </head>
+        <body>
+            <div class="container">
+                <h1>Contato</h1>
+                {% bootstrap_messages %}
+                {# Display a form #}
+                <form action="{% url 'contato' %}" method="post" class="form" autocomplete="off">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% buttons %}
+                    <button type="submit" class="btn btn-primary">
+                        Enviar Mensagem
+                    </button>
+                    {% endbuttons %}
+                </form>
+            </div>
+        </body>
+        </html>
         ```
 
     - Testar
