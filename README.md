@@ -387,7 +387,7 @@ Linux, Docker e MySQL
         ```
 
     - Incluir `ContatoForm` ao template `contato.html`
-        >Incluir bootstrap5 no template `{% load bootstrap5 %}`
+        >Incluir bootstrap5 ao template `{% load bootstrap5 %}`
         `autocomplete`como `off` é para desativar opção autocomplete do formulário, evitando exibir dados informados anteriormente pelos usuários.
         `{% csrf_token %}` - Segurança - É criado um token a cada solicitação que usado para validar o formulário. É possível verificar esse token ao inspecionar página no navegador.
         `{% bootstrap_form form %}` - Indica ao bootstrap para aplicar css no `form` que recebeu como parâmetro da view `contato`
@@ -429,6 +429,80 @@ Linux, Docker e MySQL
         ```bash
         python manage.py runserver
         ```
+
+    </p>
+
+    </details>
+
+    ---
+
+1. <span style="color:383E42"><b>Enviando e-mails com Django</b></span>
+    <details><summary><span style="color:Chocolate">Detalhes</span></summary>
+    <p>
+
+    - Configuração email em `django2/settings.py`
+        >Usado `EMAIL_BACKEND` para teste - Parte comentada é para uso com provedor de email
+        ```python
+        #...
+        STATIC_ROOT = os.path.join(STATIC_URL, 'staticfiles')
+
+        # Configuração de Email do seu servidor de email
+        EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+        """
+        EMAIL_HOST = `localhost`
+        EMAIL_HOST_USER = `seuemail@seudomínio.com.br`
+        EMAIL_PORT = 587
+        EMAIL_USER_TSL = True
+        EMAIL_HOST_PASSWORD = `sua senha`
+        """
+        #...
+        ```
+
+    - Incluir método para enviar email em `core/forms.py - ContatoForm`
+        ```python
+        #...
+        def send_mail(self):
+        nome = self.cleaned_data['nome']
+        email = self.cleaned_data['email']
+        assunto = self.cleaned_data['assunto']
+        mensagem = self.cleaned_data['mensagem']
+
+        conteudo = f'Nome: {nome}\nE-mail: {email}\nAssunto: {assunto}\nMensagem: {mensagem}'
+
+        mail = EmailMessage(
+            subject='E-mail enviado pelo sistema django2',
+            body=conteudo,
+            from_email='contato@seudominio.com.br',
+            to=['contato@seudominio.com.br',],
+            headers={'Reply-To': email}
+        )
+        mail.send()
+        #...
+        ```
+
+    - View `contato` configurada para usar o método `send_mail`
+        ```python
+        #...
+        def contato(request):
+            form = ContatoForm(request.POST or None)
+
+            if str(request.method) == 'POST':
+                print(f'Post: {request.POST}')
+                if form.is_valid():
+                    form.send_mail()
+
+                    messages.success(request, 'E-mail enviado com sucesso!')
+                else:
+                    messages.error(request, 'Erro ao enviar e-mail')
+                    form = ContatoForm()
+            context = {
+                'form': form,
+            }
+            return render(request, 'contato.html', context)
+        #...
+        ```
+
 
     </p>
 
