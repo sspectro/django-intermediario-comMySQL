@@ -1,11 +1,31 @@
+{% load bootstrap5 %}
+
+
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cotato</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cotato</title>
+
+        {# Load CSS and JavaScript #}
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
 </head>
 <body>
-    <h1>Contato</h1>
+    <div class="container">
+        <h1>Contato</h1>
+        {% bootstrap_messages %}
+        {# Display a form #}
+        <form action="{% url 'contato' %}" method="post" class="form" autocomplete="off">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+            <button type="submit" class="btn btn-primary">
+                Enviar Mensagem
+            </button>
+            {% endbuttons %}
+        </form>
+    </div>
 </body>
 </html>

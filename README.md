@@ -284,7 +284,7 @@ Linux, Docker e MySQL
         ```
 
     - Instale o `libmysqlclient-dev` se necessário
-        **Obs.:** no terminal principal/local não no projeto
+        **Obs.:** no terminal principal/local, não no projeto
         ```bash
         sudo apt-get install libmysqlclient-dev python3-dev
         ```
@@ -305,10 +305,95 @@ Linux, Docker e MySQL
         python manage.py migrate
         ```
 
+    - Criar super usuário do projeto
+        ```bash
+        python manage.py createsuperuser
+        ```
+    
+    - Testar aplicação, se não der nenhum erro, teste no navegador com `localhost:8000`
+        ```bash
+        python3 manage.py runserver
+        ```
 
     </p>
 
     </details> 
+
+    ---
+
+5. <span style="color:383E42"><b>Formulários</b></span>
+    <details><summary><span style="color:Chocolate">Detalhes</span></summary>
+    <p>
+
+    - Verificar os atributos de um form django
+        >Observe que o sinal `>>>` é mostrado ao executar o primeiro comando, significa que está no python shell, não é parte do comando
+        ```bash
+        python manage.py shell
+        >>> from django import forms
+        >>> dir(forms)
+        >>> help(forms.CharFields)
+        ```
+
+    - Criar arquivo `core/forms.py` - Arquivo que contém todos os formulários da aplicação - Criar o form `ContatoForm` 
+        ```python
+        from django import forms
+
+        class ContatoForm(forms.Form):
+            nome = forms.CharField(label='Nome', max_length=100)
+            email = forms.EmailField(label='Email', max_length=100)
+            assunto = forms.CharField(label='Assunto', max_length=120)
+            # widget - Determina que seja um campo de texto com várias linhas
+            mensagem = forms.CharField(label='mensagem', widget=forms.Textarea())
+        ```
+
+    - Incluir `ContatoForm` na view `contato`
+        ```python
+        from django.shortcuts import render
+        from django.contrib import messages
+
+        from .forms import ContatoForm
+
+        def index(request):
+            return render(request, 'index.html')
+
+        def contato(request):
+            form = ContatoForm(request.POST or None)
+
+            if str(request.method) == 'POST':
+                print(f'Post: {request.POST}')
+                if form.is_valid():
+                    nome = form.cleaned_data['nome']
+                    email = form.cleaned_data['email']
+                    assunto = form.cleaned_data['assunto']
+                    mensagem = form.cleaned_data['mensagem']
+
+                    print('Mensagem enviada')
+                    print(f'Nome: {nome}')
+                    print(f'Email: {email}')
+                    print(f'Assunto: {assunto}')
+                    print(f'mensagem: {mensagem}')
+
+                    messages.success(request, 'E-mail enviado com sucesso!')
+                else:
+                    messages.error(request, 'Erro ao enviar e-mail')
+                    form = ContatoForm()
+            context = {
+                'form': form,
+            }
+            return render(request, 'contato.html', context)
+
+        def produto(request):
+            return render(request, 'produto.html')
+        ```
+
+    - Testar
+        ```bash
+        python manage.py runserver
+        ```
+
+    </p>
+
+    </details>
 
     ---
 
