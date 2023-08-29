@@ -436,7 +436,7 @@ Linux, Docker e MySQL
 
     ---
 
-1. <span style="color:383E42"><b>Enviando e-mails com Django</b></span>
+6. <span style="color:383E42"><b>Enviando e-mails com Django</b></span>
     <details><summary><span style="color:Chocolate">Detalhes</span></summary>
     <p>
 
@@ -504,6 +504,79 @@ Linux, Docker e MySQL
         ```
 
 
+    </p>
+
+    </details>
+
+    ---
+
+7. <span style="color:383E42"><b>Definindo e configurando `models` e `ModelForms`</b></span>
+    <details><summary><span style="color:Chocolate">Detalhes</span></summary>
+    <p>
+
+    >Info: 
+    slugify - usado para criar url válida com texto passado
+    [signals](https://docs.djangoproject.com/en/4.2/topics/signals/) - Usado para detectar evento/ação que ocorra em outro lugar/objeto, neste caso `` - [Tutorial](https://www.youtube.com/watch?v=CZ7vUBLpoZc)
+
+    - Definindo modelo Produto em `core/models.py` - após definir o modelo, executar o `makemigrations e depois migrate`
+        ```python
+        from django.db import models
+        from stdimage.models import StdImageField
+
+
+        #SIGNALS
+        from django.db.models import signals
+        from django.template.defaultfilters import slugify
+
+
+        class Base(models.Model):
+            criado = models.DateField(`Data de Criação`, auto_now_add=True)
+            modificado = models.DateField(`Data de Atualização`, auto_now=True)
+            ativo = models.BooleanField(`Ativo?`, default=True)
+
+            class Meta:
+                abstract = True
+
+
+        class Produto(Base):
+            nome = models.CharField(`Nome`, max_length=100)
+            preco = models.DecimalField(`Preço`, max_digits=8, decimal_places=2)
+            estoque = models.IntegerField(`Estoque`)
+            imagem = StdImageField(`Imagem`, upload_to=`produtos`, variations={`thumb`:(124,124)})
+            slug = models.SlugField(`Slug`, max_length=100, blank=True, editable=False)
+
+            def __str__(self):
+                return self.nome
+
+
+        def produto_pre_save(signal, instance, sender, **kwargs):
+            instance.slug = slugify(instance.nome)
+
+
+        signals.pre_save.connect(produto_pre_save, sender=Produto)
+
+        ```
+        Terminal
+        ```bash
+        python manage.py makemigrations
+        python manage.py migrate
+        ```
+
+    - Configurar  exibição de `Produto` em painel admin `core/admin.py `
+        ```python
+        from django.contrib import admin
+
+        from .models import Produto
+
+
+        @admin.register(Produto)
+        class ProdutoAdmim(admin.ModelAdmin):
+            list_display = (`nome`, `preco`, `estoque`, `slug`, `criado`, `modificado`, `ativo`)
+        ```
+
+    - Testar aplicação, se não der nenhum erro, teste no navegador com `localhost:8000/admin`
+        Cadastrar produto, inserir imagem para produto - Verificar slug
+        
     </p>
 
     </details>

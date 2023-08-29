@@ -287,3 +287,4 @@ pyrightconfig.json
 # Arquivos estáticos copiados para produção
 staticfiles/
 meusDados.py
+produtos
