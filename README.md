@@ -515,8 +515,8 @@ Linux, Docker e MySQL
     <p>
 
     >Info: 
-    slugify - usado para criar url válida com texto passado
-    [signals](https://docs.djangoproject.com/en/4.2/topics/signals/) - Usado para detectar evento/ação que ocorra em outro lugar/objeto, neste caso `` - [Tutorial](https://www.youtube.com/watch?v=CZ7vUBLpoZc)
+    >slugify - usado para criar url válida com texto passado
+    >[signals](https://docs.djangoproject.com/en/4.2/topics/signals/) - Usado para detectar evento/ação que ocorra em outro lugar/objeto, neste caso `Produto` - [Tutorial](https://www.youtube.com/watch?v=CZ7vUBLpoZc)
 
     - Definindo modelo Produto em `core/models.py` - após definir o modelo, executar o `makemigrations e depois migrate`
         ```python
@@ -576,7 +576,100 @@ Linux, Docker e MySQL
 
     - Testar aplicação, se não der nenhum erro, teste no navegador com `localhost:8000/admin`
         Cadastrar produto, inserir imagem para produto - Verificar slug
-        
+
+    - Criar `modelForm` de produto
+        ```python
+        class ProdutoModelForm(forms.ModelForm):
+
+        class Meta:
+            model = Produto
+            fields = ['nome', 'preco', 'estoque', 'imagem']
+        ```
+    
+    - Configurando view Produto
+        ```python
+        def produto(request):
+        if str(request.user) != 'AnonymousUser':
+            if str(request.method) == 'POST':
+                form = ProdutoModelForm(request.POST, request.FILES)
+                if form.is_valid():
+                    # Permite acessar as informações antes de serem salvas no banco de dados
+                    # prod = form.save(commit=False)
+                    form.save()
+
+                    messages.success(request, 'Produto salvo com sucesso.')
+                    form = ProdutoModelForm()
+                else:
+                    messages.error(request, 'Erro ao salvar produto.')
+            else:
+                form = ProdutoModelForm()
+            context = {
+                'form': form
+            }
+            return render(request, 'produto.html', context)
+        else:
+            return redirect('index')
+        ```
+
+    - Configurando template produto - botstrap5
+        >Configuração para envio de arquivos no form `enctype="multipart/form-data"`
+        ```html
+        {% load bootstrap5 %}
+
+        <!DOCTYPE html>
+        <html lang="pt-br">
+        <head>
+            <meta charset="UTF-8">
+            <title>Produto</title>
+                {# Load CSS and JavaScript #}
+                {% bootstrap_css %}
+                {% bootstrap_javascript %}
+
+        </head>
+        <body>
+            <div class="container">
+                <h1>Produto</h1>
+                {% bootstrap_messages %}
+
+                <form action="{% url 'produto' %}" method="post" class="form" autocomplete="off" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% bootstrap_form form %}
+                    {% buttons %}
+                        <button type="submit" class="btn btn-primary">Cadastrar</button>
+                    {% endbuttons %}
+                </form>
+            </div>
+
+        </body>
+        </html>
+        ```
+
+    - Configurando diretório de midias/imagens em `settings` - Diretório e arquivos usados em modo debug
+        >Obervação: Foi removido o diretório `produtos` que estava sendo usado anteriormente.
+        ```python
+        #..
+        STATIC_ROOT = os.path.join(BASE_DIR, `staticfiles`)
+        MEDIA_URL = `media/`
+        MEDIA_ROOT = os.path.join(BASE_DIR, `media`)
+        #...
+        ```
+
+    - Configurando arquivo urls do projeto2
+        >Usado para permitir fazer acesso aos arquivos de mídias nos templates. O método `static(...)` retorna url para os arquivos. Usado no modo debug
+            ```python
+            from django.contrib import admin
+            from django.urls import path, include
+
+            from django.conf.urls.static import static
+            from django.conf import settings
+
+            urlpatterns = [
+                path('admin/', admin.site.urls),
+                path('', include('core.urls')),
+            ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+            ```
+
     </p>
 
     </details>

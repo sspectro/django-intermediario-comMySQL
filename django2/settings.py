@@ -138,6 +138,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(STATIC_URL, 'staticfiles')
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Configuração de Email do seu servidor de email
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

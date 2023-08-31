@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.contrib import messages
 
-from .forms import ContatoForm
+from .forms import ContatoForm, ProdutoModelForm
 
 def index(request):
     return render(request, 'index.html')
@@ -23,5 +23,25 @@ def contato(request):
     }
     return render(request, 'contato.html', context)
 
+
 def produto(request):
-    return render(request, 'produto.html')
+    if str(request.user) != 'AnonymousUser':
+        if str(request.method) == 'POST':
+            form = ProdutoModelForm(request.POST, request.FILES)
+            if form.is_valid():
+                # Permite acessar as informações antes de serem salvas no banco de dados
+                # prod = form.save(commit=False)
+                form.save()
+
+                messages.success(request, 'Produto salvo com sucesso.')
+                form = ProdutoModelForm()
+            else:
+                messages.error(request, 'Erro ao salvar produto.')
+        else:
+            form = ProdutoModelForm()
+        context = {
+            'form': form
+        }
+        return render(request, 'produto.html', context)
+    else:
+        return redirect('index')
