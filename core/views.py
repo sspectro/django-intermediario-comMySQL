@@ -1,10 +1,32 @@
 from django.shortcuts import redirect, render
 from django.contrib import messages
 
+from core.models import Produto
+
 from .forms import ContatoForm, ProdutoModelForm
 
 def index(request):
-    return render(request, 'index.html')
+    context = {
+        'produtos': Produto.objects.all()
+    }
+    return render(request, 'index.html', context)
+
+
+def contato(request):
+    form = ContatoForm(request.POST or None)
+
+    if str(request.method) == 'POST':
+        if form.is_valid():
+            form.send_mail()
+
+            messages.success(request, 'E-mail enviado com sucesso!')
+            form = ContatoForm()
+        else:
+            messages.error(request, 'Erro ao enviar e-mail')
+    context = {
+        'form': form
+    }
+    return render(request, 'contato.html', context)
 
 def contato(request):
     form = ContatoForm(request.POST or None)

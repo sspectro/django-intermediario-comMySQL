@@ -1,6 +1,6 @@
 # django-intermediario-comMySQL
 
->Projeto Django intermediário com banco de dados MySQL, Bootstrap5
+>Projeto Django intermediário com banco de dados MySQL, Bootstrap4.
 > 
 >>Projeto desenvolvido no curso da Geek University - Udemy [Programação Web com Python e Django Framework: Essencial](https://www.udemy.com/course/programacao-web-com-django-framework-do-basico-ao-avancado/)
 
@@ -27,11 +27,11 @@ Linux, Docker e MySQL
         sudo apt install python3-pip
         pip3 --version
         ```
-    - Instalar o `django`, `whitenoise`(para os arquivos staticos), `gunicorn`( servidor para python), `django-bootstrap-v5` (integrado com django), `PyMySQL`(driver de conexão com o banco mysql) e `django-std-image`(para trabalhar com imagens)
+    - Instalar o `django`, `whitenoise`(para os arquivos staticos), `gunicorn`( servidor para python), `django-bootstrap4` (integrado com django), `PyMySQL`(driver de conexão com o banco mysql) e `django-std-image`(para trabalhar com imagens)
         ```sh
         sudo apt update
         pip3 install django
-        pip3 install whitenoise gunicorn django-bootstrap5 PyMySQL django-stdimage
+        pip3 install whitenoise gunicorn django-bootstrap4 PyMySQL django-stdimage
         ```
     - Criação arquivo requirements
     Contém informaçẽos sobre todas as bibliotecas utilizadas no projeto. Para atualizar o arquivo, basta executar o comando novamente após instalar outras bibliotecas.
@@ -65,7 +65,7 @@ Linux, Docker e MySQL
         'django.contrib.staticfiles',
 
         'core',
-        'bootstrap5',
+        'bootstrap4',
         'stdimage',
         ]
         ```
@@ -387,40 +387,34 @@ Linux, Docker e MySQL
         ```
 
     - Incluir `ContatoForm` ao template `contato.html`
-        >Incluir bootstrap5 ao template `{% load bootstrap5 %}`
+        >Incluir bootstrap4 ao template `{% load bootstrap4 %}`
         `autocomplete`como `off` é para desativar opção autocomplete do formulário, evitando exibir dados informados anteriormente pelos usuários.
         `{% csrf_token %}` - Segurança - É criado um token a cada solicitação que usado para validar o formulário. É possível verificar esse token ao inspecionar página no navegador.
         `{% bootstrap_form form %}` - Indica ao bootstrap para aplicar css no `form` que recebeu como parâmetro da view `contato`
         
         ```html
-        {% load bootstrap5 %}
-
+        {% load bootstrap4 %}
         <!DOCTYPE html>
         <html lang="pt-br">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Cotato</title>
-
-                {# Load CSS and JavaScript #}
-                {% bootstrap_css %}
-                {% bootstrap_javascript %}
+        <head>
+            <meta charset="UTF-8">
+            <title>Contato</title>
+            {% bootstrap_css %}
         </head>
         <body>
             <div class="container">
                 <h1>Contato</h1>
                 {% bootstrap_messages %}
-                {# Display a form #}
+
                 <form action="{% url 'contato' %}" method="post" class="form" autocomplete="off">
                     {% csrf_token %}
                     {% bootstrap_form form %}
                     {% buttons %}
-                    <button type="submit" class="btn btn-primary">
-                        Enviar Mensagem
-                    </button>
+                        <button type="submit" class="btn btn-primary">Enviar Mensagem</button>
                     {% endbuttons %}
                 </form>
             </div>
+        {% bootstrap_javascript jquery='full' %}
         </body>
         </html>
         ```
@@ -611,20 +605,16 @@ Linux, Docker e MySQL
             return redirect('index')
         ```
 
-    - Configurando template produto - botstrap5
+    - Configurando template produto - botstrap4
         >Configuração para envio de arquivos no form `enctype="multipart/form-data"`
         ```html
-        {% load bootstrap5 %}
-
+        {% load bootstrap4 %}
         <!DOCTYPE html>
         <html lang="pt-br">
         <head>
             <meta charset="UTF-8">
             <title>Produto</title>
-                {# Load CSS and JavaScript #}
-                {% bootstrap_css %}
-                {% bootstrap_javascript %}
-
+            {% bootstrap_css %}
         </head>
         <body>
             <div class="container">
@@ -640,7 +630,7 @@ Linux, Docker e MySQL
                     {% endbuttons %}
                 </form>
             </div>
-
+        {% bootstrap_javascript jquery='full' %}
         </body>
         </html>
         ```
@@ -657,19 +647,88 @@ Linux, Docker e MySQL
 
     - Configurando arquivo urls do projeto2
         >Usado para permitir fazer acesso aos arquivos de mídias nos templates. O método `static(...)` retorna url para os arquivos. Usado no modo debug
-            ```python
-            from django.contrib import admin
-            from django.urls import path, include
+        ```python
+        from django.contrib import admin
+        from django.urls import path, include
 
-            from django.conf.urls.static import static
-            from django.conf import settings
+        from django.conf.urls.static import static
+        from django.conf import settings
 
-            urlpatterns = [
-                path('admin/', admin.site.urls),
-                path('', include('core.urls')),
-            ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-            ```
+        urlpatterns = [
+            path('admin/', admin.site.urls),
+            path('', include('core.urls')),
+        ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+        ```
+    - Cofigurando a view `index` em `core/views.py`
+        > Configurado envio de lista de produtos no contexto para página index
+        ```python
+        def index(request):
+        context = {
+            'produtos': Produto.objects.all()
+        }
+        return render(request, 'index.html', context)
+        ```
 
+    - Configurando template `core/templates/index.html`
+        ```html
+        {% load bootstrap4 %}
+        {% load static %}
+        <!DOCTYPE html>
+        <html lang="pt-br">
+        <head>
+            <meta charset="UTF-8">
+            <title>Index</title>
+            {% bootstrap_css %}
+            <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+        </head>
+        <body>
+            <div class="container">
+                {% if produtos %}
+                <h1>Produtos</h1>
+
+                <table class="table table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Produto</th>
+                            <th scope="col">Preço</th>
+                            <th scope="col">Estoque</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for produto in produtos %}
+                            <tr>
+                                <td scope="row">{{ produto.id }}</td>
+                                <td scope="row"><a href="#modal{{produto.id}}" data-toggle="modal">{{ produto.nome }}</a></td>
+                                <td scope="row">{{ produto.preco }}</td>
+                                <td scope="row">{{ produto.estoque }}</td>
+                            </tr>
+                            <div class="modal fade bd-example-modal-lg show" id="modal{{produto.id}}" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modal-produto-label">Detalhes do produto</h5>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body" id="dynamic-content">
+                                            <img src="{{ produto.imagem.url }}" class="img-fluid" alt="{{ produto.nome }}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                    <h2>Ainda não existem produtos cadastrados. :(</h2>
+                {% endif %}
+            </div>
+        {% bootstrap_javascript jquery='full' %}
+        </body>
+        </html>
+        ```
     </p>
 
     </details>
@@ -682,7 +741,7 @@ Linux, Docker e MySQL
     <details><summary><span style="color:Chocolate">Detalhes</span></summary>
     <p>
 
-
+    >Em Desenvolvimento.....
 
     </p>
 

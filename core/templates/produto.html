@@ -1,14 +1,10 @@
-{% load bootstrap5 %}
-
+{% load bootstrap4 %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Produto</title>
-        {# Load CSS and JavaScript #}
-        {% bootstrap_css %}
-        {% bootstrap_javascript %}
-
+    {% bootstrap_css %}
 </head>
 <body>
     <div class="container">
@@ -24,6 +20,6 @@
             {% endbuttons %}
         </form>
     </div>
-
+{% bootstrap_javascript jquery='full' %}
 </body>
 </html>
