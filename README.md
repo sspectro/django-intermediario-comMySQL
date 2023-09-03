@@ -580,7 +580,8 @@ Linux, Docker e MySQL
             fields = ['nome', 'preco', 'estoque', 'imagem']
         ```
     
-    - Configurando view Produto
+    - Configurando view Produto - Inclusão de controle de acesso usando `Seção` do usuário
+        > Em caso de usuário anônimo (não estando logado), será redirecionado para página `index.html`
         ```python
         def produto(request):
         if str(request.user) != 'AnonymousUser':
@@ -667,6 +668,14 @@ Linux, Docker e MySQL
             'produtos': Produto.objects.all()
         }
         return render(request, 'index.html', context)
+        ```
+    
+    - Inclusão arquivo `core/static/css/styles.css` 
+        >Configurar cor do link do produto
+        ```css
+        a{
+            color: #fff;
+        }
         ```
 
     - Configurando template `core/templates/index.html`
