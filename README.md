@@ -49,7 +49,7 @@ Linux, Docker e MySQL
     <p>
 
     - Criar app no mesmo diretório/pasta que está o projeto. Usa ponto espaço e ponto no final para não criar subdiretório
-        >Criarei um arquivo `meusDados.py` com com as informaçoes que não quero que vá para repositório - Então incluirei o arquivo com a classe no gitignore
+        >Criarei um arquivo `meusDados.py` com com as informaçoes que não quero que vá para repositório - Então incluirei o arquivo com o dicionárido de dados no gitignore
         ```sh
         django-admin startproject django2 .
         django-admin startapp core
